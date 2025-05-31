@@ -31,14 +31,18 @@ jobs:
           # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
-      - name: Install OpenCV
-        run: |
-          choco install opencv --version=4.5.0
+      - name: Install OpenCV (Windows)
+        run: choco install opencv --version=4.5.0 -y
         shell: powershell
 
-      # ✅ Set environment variable supaya crate opencv tahu lokasi opencv
       - name: Set OPENCV_DIR
-        run: echo "OPENCV_DIR=C:\\tools\\opencv\\build" >> $env:GITHUB_ENV
+        run: |
+          echo "OPENCV_DIR=C:\\tools\\opencv\\build" >> $env:GITHUB_ENV
+        shell: powershell
+
+      - name: Add OpenCV DLL to PATH
+        run: |
+          echo "C:\\tools\\opencv\\build\\x64\\vc15\\bin" >> $env:GITHUB_PATH
         shell: powershell
 
       - name: install dependencies (ubuntu only)
