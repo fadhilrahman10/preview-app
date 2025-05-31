@@ -3,6 +3,7 @@
 
   let name = $state("");
   let greetMsg = $state("");
+  let stream = null;
 
   async function greet(event) {
     event.preventDefault();
@@ -13,32 +14,39 @@
   async function startCamera() {
   const video = document.getElementById('video');
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    stream = await navigator.mediaDevices.getUserMedia({
+       video: {
+         facingMode: 'user'
+       },
+    });
     video.srcObject = stream;
   } catch (e) {
     console.error('Gagal mengakses kamera:', e);
   }
 }
+
+function stopCamera() {
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+    const video = document.getElementById('video');
+    video.srcObject = null;
+    stream = null;
+  }
+}
 </script>
 
 <main class="container">
-  <h1>Welcome to Tauri + Svelte</h1>
-
-  <video id="video" autoplay playsinline></video>
-  <button onclick={startCamera}>Start Camera</button>
-
+  <h1>Welcome Bayu</h1>
   <div class="row">
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo vite" alt="Vite Logo" />
-    </a>
-    <a href="https://tauri.app" target="_blank">
-      <img src="/tauri.svg" class="logo tauri" alt="Tauri Logo" />
-    </a>
-    <a href="https://kit.svelte.dev" target="_blank">
-      <img src="/svelte.svg" class="logo svelte-kit" alt="SvelteKit Logo" />
-    </a>
+    <video id="video" autoplay playsinline class="camera-feed"></video>
   </div>
-  <p>Click on the Tauri, Vite, and SvelteKit logos to learn more.</p>
+
+<div class="row">
+  <button onclick={startCamera}>Start Camera</button>
+  <button onclick={stopCamera}>Stop Camera</button>
+</div>
+
+  <p>Happy wedding bibir!.</p>
 
   <form class="row" onsubmit={greet}>
     <input id="greet-input" placeholder="Enter a name..." bind:value={name} />
@@ -48,14 +56,6 @@
 </main>
 
 <style>
-.logo.vite:hover {
-  filter: drop-shadow(0 0 2em #747bff);
-}
-
-.logo.svelte-kit:hover {
-  filter: drop-shadow(0 0 2em #ff3e00);
-}
-
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
@@ -81,30 +81,11 @@
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: 0.75s;
-}
-
-.logo.tauri:hover {
-  filter: drop-shadow(0 0 2em #24c8db);
-}
-
 .row {
   display: flex;
   justify-content: center;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-
-a:hover {
-  color: #535bf2;
+  gap: 12px;
+  margin-top: 10px;
 }
 
 h1 {
@@ -152,10 +133,6 @@ button {
     background-color: #2f2f2f;
   }
 
-  a:hover {
-    color: #24c8db;
-  }
-
   input,
   button {
     color: #ffffff;
@@ -165,5 +142,14 @@ button {
     background-color: #0f0f0f69;
   }
 }
+
+.camera-feed {
+    height: 80%;
+
+    /* NON-mirrored, arah sesuai kenyataan */
+/*    transform: none;*/
+  transform: scaleX(-1);
+    object-fit: cover;
+  }
 
 </style>
