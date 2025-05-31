@@ -1,5 +1,6 @@
 <script>
   import { invoke } from "@tauri-apps/api/core";
+  import { onMount } from "svelte";
 
   let name = $state("");
   let greetMsg = $state("");
@@ -33,10 +34,23 @@ function stopCamera() {
     stream = null;
   }
 }
+
+let frame = $state('');
+
+onMount( async () => {
+    frame = await invoke('get_camera_frame');
+  });
 </script>
 
 <main class="container">
   <h1>Welcome Bayu</h1>
+
+  {#if frame}
+    <img src={frame} alt="Live Camera Feed" style="max-width: 100%; border: 2px solid #ccc;" />
+  {:else}
+    <p>Loading preview...</p>
+  {/if}
+
   <div class="row">
     <video id="video" autoplay playsinline class="camera-feed"></video>
   </div>
